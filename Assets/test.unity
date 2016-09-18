@@ -147,6 +147,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+--- !u!1 &1206452639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1206452641}
+  - 114: {fileID: 1206452640}
+  m_Layer: 0
+  m_Name: Plant
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1206452640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1206452639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9775e1a220bcd3b4a89ec70c88b34c04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depth: 10
+  axiom: FFFFFFFFF
+  varXRewriting: FFF[
+  varFRewriting: '[-F+]'
+  growthLength: 2
+  growthAngle: 45
+--- !u!4 &1206452641
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1206452639}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
 --- !u!1 &1588058709
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,7 +223,7 @@ MonoBehaviour:
   ip: 127.0.0.1
   port: 11999
   resolution: {x: 1280, y: 960}
-  drawingPrefab: {fileID: 11445900, guid: d14b9ccd6bda6154faa96a0977c652da, type: 2}
+  drawingPrefab: {fileID: 11445900, guid: cc9889a4c8365ca409696e1490deb171, type: 2}
 --- !u!4 &1588058711
 Transform:
   m_ObjectHideFlags: 0

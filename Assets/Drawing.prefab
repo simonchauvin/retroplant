@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 402048}
   - 33: {fileID: 3331364}
   - 23: {fileID: 2361178}
-  - 64: {fileID: 6498418}
+  - 68: {fileID: 6827840}
   - 114: {fileID: 11445900}
   m_Layer: 8
   m_Name: Drawing
@@ -65,18 +65,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 128120}
   m_Mesh: {fileID: 0}
---- !u!64 &6498418
-MeshCollider:
+--- !u!68 &6827840
+EdgeCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 128120}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Convex: 0
-  m_Mesh: {fileID: 0}
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  m_Points:
+  - {x: -0.5, y: 0}
+  - {x: 0.5, y: 0}
 --- !u!114 &11445900
 MonoBehaviour:
   m_ObjectHideFlags: 1

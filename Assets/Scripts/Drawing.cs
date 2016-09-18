@@ -4,7 +4,7 @@ using System.Collections;
 public class Drawing : MonoBehaviour
 {
     private MeshFilter thisMeshFilter;
-    private MeshCollider thisMeshCollider;
+    private EdgeCollider2D thisEdgeCollider;
 
     private Vector2[] points;
     private int type;
@@ -13,7 +13,7 @@ public class Drawing : MonoBehaviour
 	void Awake ()
     {
         thisMeshFilter = GetComponent<MeshFilter>();
-        thisMeshCollider = GetComponent<MeshCollider>();
+        thisEdgeCollider = GetComponent<EdgeCollider2D>();
         points = new Vector2[0];
 	}
 	
@@ -25,7 +25,7 @@ public class Drawing : MonoBehaviour
     public void draw ()
     {
         thisMeshFilter.mesh = createMesh();
-        thisMeshCollider.sharedMesh = thisMeshFilter.mesh;
+        thisEdgeCollider.points = points;
 
         // Hack to have all drawings facing the camera
         if (thisMeshFilter.mesh.normals[0].z > 0)
