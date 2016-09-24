@@ -9,8 +9,9 @@ public class LSystem : MonoBehaviour
     public Transform unit3Prefab;
     public Transform unit4Prefab;
     public Transform unit5Prefab;
-    public float unitSize;
     public float startSize;
+    public int minSize;
+    public int maxNumberOfChildren;
     public float angleDecreaseFactor;
     public float lengthDecreaseFactor;
     public float scaleDecreaseFactor;
@@ -30,6 +31,7 @@ public class LSystem : MonoBehaviour
 	private int currentIndex;
 
     private List<Node> nodes;
+    private float unitSize;
     private float growthTimer;
 
 
@@ -41,6 +43,7 @@ public class LSystem : MonoBehaviour
 		lastBranchPosition = transform.position;
         nodes = new List<Node>();
         nodes.Add(new Node(transform.position, maxAngle, startSize, numberOfUnitsPerBranch));
+        unitSize = unit1Prefab.GetComponent<SpriteRenderer>().bounds.size.y;
         growthTimer = 0f;
         currentStack = new ArrayList();
 		for (int i = 0; i < axiom.Length; i++)
@@ -129,35 +132,47 @@ public class LSystem : MonoBehaviour
 
         if (growthTimer >= growthInterval)
         {
-            int i = 0;
-            int index = Random.Range(0, nodes.Count);
-            while ((nodes[index].getChildren().Count >= 2 || (index - 1 >= 0 && nodes[index - 1].getChildren().Count > 0) || (index + 1 < nodes.Count && nodes[index + 1].getChildren().Count > 0)) && i < nodes.Count)
+            int index = -1;
+            List<int> indices = new List<int>();
+            int hack = 0;
+            // TODO randomize number of children (3 is very rare)
+            // TODO this rule limits broussaile but should be parametrized to maxNumberOfChildren: (index - 1 >= 0 && nodes[index - 1].getChildren().Count > 0) || (index + 1 < nodes.Count && nodes[index + 1].getChildren().Count > 0)
+            while (hack < 500 && (index < 0 || nodes[index].getChildren().Count >= maxNumberOfChildren) && indices.Count < nodes.Count)
             {
-                index = Random.Range(0, nodes.Count - 1);
-                i++;
-            }
-            Node node = nodes[index];
-
-            // Moving
-            Vector2 position = new Vector2();
-            float angle = Random.Range(node.maxAngle, -node.maxAngle);
-
-            // Drawing
-            // TODO coroutine LERP
-            int length = Mathf.CeilToInt(node.length);
-            for (i = 0; i < length; i++)
-            {
-                position.x = node.position.x + i * unitSize * node.scale * Mathf.Sin(angle * (Mathf.PI / 180f));
-                position.y = node.position.y + i * unitSize * node.scale * Mathf.Cos(angle * (Mathf.PI / 180f));
-
-                Transform unit = Instantiate(unit1Prefab, position, Quaternion.identity) as Transform;
-                unit.localScale = new Vector3(node.scale, node.scale, node.scale);
-                unit.parent = transform;
+                index = Random.Range(0, nodes.Count);
+                if (!indices.Contains(index))
+                {
+                    indices.Add(index);
+                }
+                hack++;
             }
 
-            Node newNode = new Node(position, node.maxAngle * angleDecreaseFactor, node.scale * scaleDecreaseFactor, node.length * lengthDecreaseFactor);
-            nodes.Add(newNode);
-            node.addChildren(newNode);
+            if (index >= 0 && nodes[index].getChildren().Count < maxNumberOfChildren && nodes[index].length > minSize)
+            {
+                Node node = nodes[index];
+
+                // Moving
+                Vector2 position = new Vector2();
+                float angle = Random.Range(node.maxAngle, -node.maxAngle);
+
+                // Drawing
+                // TODO coroutine LERP
+                int length = Mathf.CeilToInt(node.length);
+                for (int i = node.getChildren().Count > 0 ? 1 : 0; i < length; i++)
+                {
+                    position.x = node.position.x + i * unitSize * node.scale * Mathf.Sin(angle * (Mathf.PI / 180f));
+                    position.y = node.position.y + i * unitSize * node.scale * Mathf.Cos(angle * (Mathf.PI / 180f));
+                    
+                    Transform unit = Instantiate(unit1Prefab, position, Quaternion.identity) as Transform;
+                    unit.localRotation = Quaternion.Euler(new Vector3(0f, 0f, -angle));
+                    unit.localScale = new Vector3(node.scale, node.scale, node.scale);
+                    unit.parent = transform;
+                }
+
+                Node newNode = new Node(position, node.maxAngle * angleDecreaseFactor, node.scale * scaleDecreaseFactor, node.length * lengthDecreaseFactor);
+                nodes.Add(newNode);
+                node.addChildren(newNode);
+            }
 
             growthTimer = 0f;
         }
