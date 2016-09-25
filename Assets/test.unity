@@ -179,8 +179,9 @@ MonoBehaviour:
   unit3Prefab: {fileID: 0}
   unit4Prefab: {fileID: 0}
   unit5Prefab: {fileID: 0}
-  unitSize: 1
-  startSize: 0.25
+  startSize: 0.06
+  minSize: 1
+  maxNumberOfChildren: 2
   angleDecreaseFactor: 0.9
   lengthDecreaseFactor: 0.9
   scaleDecreaseFactor: 0.9
