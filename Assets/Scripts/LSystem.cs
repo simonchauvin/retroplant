@@ -50,6 +50,7 @@ public class LSystem : MonoBehaviour
                 // Moving
                 Transform unitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
                 Vector2 position = node.position;
+                // TODO limit angle based on other children
                 float angle = Random.Range(node.maxAngle, -node.maxAngle);
                 float unitHeight = unitPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
                 Vector2 lastPosition = position;
@@ -71,7 +72,7 @@ public class LSystem : MonoBehaviour
                         {
                             Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
                             Debug.DrawLine(position, position + (hitInfo.normal), Color.blue, Mathf.Infinity);
-                            angle -= Vector3.Angle(position - lastPosition, hitInfo.normal) * 2f;// + Vector3.Angle(Vector3.up, hitInfo.normal);
+                            angle -= Vector3.Angle(position - lastPosition, hitInfo.normal) - 90f;// + Vector3.Angle(Vector3.up, hitInfo.normal);
                             unit.localRotation = Quaternion.Euler(new Vector3(0f, 0f, -angle));
                         }
                     }

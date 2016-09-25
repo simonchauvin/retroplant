@@ -182,10 +182,10 @@ MonoBehaviour:
   startSize: 0.6
   minSize: 1
   maxNumberOfChildren: 2
-  angleDecreaseFactor: 0.9
-  lengthDecreaseFactor: 0.9
-  scaleDecreaseFactor: 0.9
-  growthInterval: 0.016
+  angleDecreaseFactor: 0.99
+  lengthDecreaseFactor: 0.99
+  scaleDecreaseFactor: 0.99
+  growthInterval: 0.1
   numberOfUnitsPerBranch: 10
   maxAngle: 60
 --- !u!4 &1206452641
@@ -210,7 +210,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1532706466}
   - 212: {fileID: 1532706465}
-  - 61: {fileID: 1532706464}
+  - 58: {fileID: 1532706464}
   m_Layer: 8
   m_Name: GameObject
   m_TagString: Untagged
@@ -218,8 +218,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!61 &1532706464
-BoxCollider2D:
+--- !u!58 &1532706464
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
@@ -231,7 +231,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Size: {x: 0.16, y: 0.16}
+  m_Radius: 0.08
 --- !u!212 &1532706465
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -269,7 +269,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1532706463}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.51, y: 2.02, z: 0}
+  m_LocalPosition: {x: -7.36, y: 2.02, z: 0}
   m_LocalScale: {x: 50, y: 50, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -400,7 +400,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1974205346}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 15, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
