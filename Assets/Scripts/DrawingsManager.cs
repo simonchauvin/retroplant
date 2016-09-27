@@ -31,29 +31,32 @@ public class DrawingsManager : MonoBehaviour
 	void Update ()
     {
         // Retrieve data from openframeworks
-        if (client.Available > 0)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            data = Encoding.UTF8.GetString(client.Receive(ref ipep));
-            if (data != null && data.Length > 0)
+            if (client.Available > 0)
             {
-                for (int i = 0; i < transform.childCount; i++)
+                data = Encoding.UTF8.GetString(client.Receive(ref ipep));
+                if (data != null && data.Length > 0)
                 {
-                    Destroy(transform.GetChild(i).gameObject);
-                }
-
-                dataDrawings = data.Split(';');
-                drawings = new Drawing[dataDrawings.Length];
-                for (int i = 0; i < dataDrawings.Length; i++)
-                {
-                    dataPoints = dataDrawings[i].Split(',');
-                    drawings[i] = Instantiate(drawingPrefab);
-                    drawings[i].transform.parent = transform;
-                    for (int j = 0; j < dataPoints.Length; j++)
+                    for (int i = 0; i < transform.childCount; i++)
                     {
-                        point = dataPoints[j].Split('&');
-                        drawings[i].addPoint(float.Parse(point[0]), float.Parse(point[1]));
+                        Destroy(transform.GetChild(i).gameObject);
                     }
-                    drawings[i].draw();
+
+                    dataDrawings = data.Split(';');
+                    drawings = new Drawing[dataDrawings.Length];
+                    for (int i = 0; i < dataDrawings.Length; i++)
+                    {
+                        dataPoints = dataDrawings[i].Split(',');
+                        drawings[i] = Instantiate(drawingPrefab);
+                        drawings[i].transform.parent = transform;
+                        for (int j = 0; j < dataPoints.Length; j++)
+                        {
+                            point = dataPoints[j].Split('&');
+                            drawings[i].addPoint(float.Parse(point[0]), float.Parse(point[1]));
+                        }
+                        drawings[i].draw();
+                    }
                 }
             }
         }

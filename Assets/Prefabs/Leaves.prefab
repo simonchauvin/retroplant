@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &132848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 490342}
+  - 114: {fileID: 11482100}
+  m_Layer: 0
+  m_Name: Leaves
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &490342
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 132848}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+--- !u!114 &11482100
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 132848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9775e1a220bcd3b4a89ec70c88b34c04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitPrefabs:
+  - {fileID: 442926, guid: f4b544b2ba2d9814b803364a8dcae99d, type: 2}
+  - {fileID: 442926, guid: 0bce3ccd02ba20b46b7c28d1735b672b, type: 2}
+  - {fileID: 442926, guid: 0343d51e91bc90d459c451297a1b789f, type: 2}
+  - {fileID: 442926, guid: 060d93232f37e6346899820bd2894ec4, type: 2}
+  - {fileID: 442926, guid: a2828d1e7ecdc1a4f81acaa0acc9a77a, type: 2}
+  - {fileID: 442926, guid: 3c2a7312333625f489156450eb947ff0, type: 2}
+  - {fileID: 442926, guid: c939a2b01406ba3408a89d9d20bf1f98, type: 2}
+  - {fileID: 442926, guid: 46b2898e12a49744fbb6f2cfc9ffd21c, type: 2}
+  - {fileID: 442926, guid: 82b9f551cff2778419cf29f6e454a807, type: 2}
+  - {fileID: 442926, guid: edde7945be7bdfa4c927cc5f47dcdb37, type: 2}
+  - {fileID: 442926, guid: 2f6f2803e0b6e3641ba892a35b4d3ca7, type: 2}
+  - {fileID: 442926, guid: 40e6a777fac62b64fa0a383f04e9aec7, type: 2}
+  - {fileID: 442926, guid: 723c2cbf28b8a5e4390015941cd9ed36, type: 2}
+  - {fileID: 442926, guid: 2f052ad453a12d848a7ea3a2dc407455, type: 2}
+  startSize: 0.2
+  minLength: 1
+  maxNumberOfChildren: 1
+  angleDecreaseFactor: 0.99
+  lengthDecreaseFactor: 0.99
+  scaleDecreaseFactor: 0.99
+  growthInterval: 0.26
+  startLength: 10
+  maxAngle: 60
+  sequenced: 0
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 132848}
+  m_IsPrefabParent: 1
