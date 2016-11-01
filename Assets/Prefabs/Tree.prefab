@@ -40,11 +40,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9775e1a220bcd3b4a89ec70c88b34c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefabs:
+  unitPrefabsAge0:
   - {fileID: 442926, guid: 79ecd4e3f886044499b62d78a8916bd2, type: 2}
   - {fileID: 442926, guid: a9bbf9a1d74abe94ea6816f1957fef9a, type: 2}
   - {fileID: 442926, guid: e98bc6028750fa1418125696e3eb1e4f, type: 2}
   - {fileID: 442926, guid: d1f59f984b460344c990b21254a149e1, type: 2}
+  unitPrefabsAge1:
+  - {fileID: 442926, guid: d2d06893fb92fcb43bcc0ef576c7facf, type: 2}
+  - {fileID: 442926, guid: 25ad39e1addc7574ca25939067a0a65c, type: 2}
+  - {fileID: 442926, guid: 3c96115575cc8f140a77f8a08f4fd635, type: 2}
+  - {fileID: 442926, guid: bc19d54d39eaac74aa750e51d3a8a5c8, type: 2}
+  unitPrefabsAge2:
+  - {fileID: 442926, guid: a45b4271d1fd2a14d89c6dfbc4633cb7, type: 2}
+  - {fileID: 442926, guid: cba46d4d9b7970a42b8b436fd3b40672, type: 2}
+  - {fileID: 442926, guid: 3b1a276f24abf5945958d4aa4ecb890e, type: 2}
+  - {fileID: 442926, guid: 83748aefde505644cabcdc476d94449a, type: 2}
+  unitPrefabsAge3:
+  - {fileID: 442926, guid: 81fd90dd53802f84395665ce551b7da9, type: 2}
+  - {fileID: 442926, guid: d2d7b26314e531348801afd090a3183a, type: 2}
+  - {fileID: 442926, guid: 02c268f3081789f4e8034f798473b4cf, type: 2}
+  - {fileID: 442926, guid: 4d5de8f10d1f2ca49a9cdf0869e61dc0, type: 2}
+  unitPrefabsAge4:
+  - {fileID: 442926, guid: 4e8844d5e0cef69448257f051f2b7028, type: 2}
+  - {fileID: 442926, guid: aa37d7f901168ee47a600b6291906d13, type: 2}
+  - {fileID: 442926, guid: 58ecf19ce323e094e82d252667944f4f, type: 2}
+  - {fileID: 442926, guid: c168b13a012b3ae49ab201f8f42f836b, type: 2}
   startSize: 0.6
   minLength: 1
   maxNumberOfChildren: 2
@@ -52,6 +72,7 @@ MonoBehaviour:
   lengthDecreaseFactor: 0.99
   scaleDecreaseFactor: 0.99
   growthInterval: 0.26
+  startingAge: 0
   startLength: 10
   maxAngle: 60
   sequenced: 0

@@ -4,7 +4,11 @@ using System.Collections.Generic;
 
 public class LSystem : MonoBehaviour
 {
-    public Transform[] unitPrefabs;
+    public Transform[] unitPrefabsAge0;
+    public Transform[] unitPrefabsAge1;
+    public Transform[] unitPrefabsAge2;
+    public Transform[] unitPrefabsAge3;
+    public Transform[] unitPrefabsAge4;
     public float startSize;
     public int minLength;
     public int maxNumberOfChildren;
@@ -12,6 +16,7 @@ public class LSystem : MonoBehaviour
     public float lengthDecreaseFactor;
     public float scaleDecreaseFactor;
     public float growthInterval;
+    public int startingAge;
 	public int startLength;
 	public float maxAngle;
     public bool sequenced;
@@ -101,7 +106,8 @@ public class LSystem : MonoBehaviour
                     currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
                 }*/
 
-                currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
+                Transform[] units = getUnitsFromDepth(currentNode.depth);
+                currentUnitPrefab = units[Random.Range(0, units.Length)];
                 currentPosition = currentNode.position;
                 currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                 if (currentNode.getChildren().Count > 0)
@@ -150,12 +156,37 @@ public class LSystem : MonoBehaviour
             currentPosition.x += unitHeight * currentNode.scale * Mathf.Sin(currentAngle * (Mathf.PI / 180f));
             currentPosition.y += unitHeight * currentNode.scale * Mathf.Cos(currentAngle * (Mathf.PI / 180f));
 
-            currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
+            Transform[] units = getUnitsFromDepth(currentNode.depth);
+            currentUnitPrefab = units[Random.Range(0, units.Length)];
             unitHeight = currentUnitPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
 
             yield return new WaitForSeconds(growthInterval);
         }
 
         ready = true;
+    }
+
+    private Transform[] getUnitsFromDepth (int depth)
+    {
+        if (depth == 0)
+        {
+            return unitPrefabsAge4;
+        }
+        else if (depth == 1)
+        {
+            return unitPrefabsAge3;
+        }
+        else if (depth == 2)
+        {
+            return unitPrefabsAge2;
+        }
+        else if (depth == 3)
+        {
+            return unitPrefabsAge1;
+        }
+        else
+        {
+            return unitPrefabsAge0;
+        }
     }
 }

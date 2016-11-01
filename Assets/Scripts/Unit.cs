@@ -4,6 +4,7 @@ using System.Collections;
 public class Unit : MonoBehaviour
 {
     public int type { get; set; }
+    public int age;
 
 
 	void Start ()
