@@ -65,14 +65,13 @@ MonoBehaviour:
   - {fileID: 442926, guid: aa37d7f901168ee47a600b6291906d13, type: 2}
   - {fileID: 442926, guid: 58ecf19ce323e094e82d252667944f4f, type: 2}
   - {fileID: 442926, guid: c168b13a012b3ae49ab201f8f42f836b, type: 2}
-  startSize: 0.6
   minLength: 1
   maxNumberOfChildren: 2
   angleDecreaseFactor: 1
   lengthDecreaseFactor: 0.99
   scaleDecreaseFactor: 0.99
   growthInterval: 0.26
-  startingAge: 0
+  startingAge: 4
   startLength: 10
   maxAngle: 60
   sequenced: 0

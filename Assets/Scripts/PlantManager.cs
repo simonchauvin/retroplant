@@ -4,6 +4,7 @@ using System.Collections;
 public class PlantManager : MonoBehaviour
 {
     public LSystem plantPrefab;
+    public Transform startingPoint;
 
     private LSystem plant;
 
@@ -19,12 +20,12 @@ public class PlantManager : MonoBehaviour
         {
             if (plant != null)
             {
-                Destroy(plant);
+                Destroy(plant.gameObject);
             }
 
-            plant = Instantiate(plantPrefab, new Vector3(0f, 23f, 0f), Quaternion.identity) as LSystem;
+            plant = Instantiate(plantPrefab, startingPoint.position, Quaternion.identity) as LSystem;
             plant.transform.parent = transform;
-            plant.originAngle = 180f;
+            plant.originAngle = 0f;
         }
 	}
 }
