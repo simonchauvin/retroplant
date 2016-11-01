@@ -139,7 +139,7 @@ public class LSystem : MonoBehaviour
             Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
             unit.parent = transform;
 
-            // TODO should be done only once before starting growing the branch (code before the loop)
+            // TODO should be done only once before starting growing the branch
             RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
             if (hitInfo)
             {
