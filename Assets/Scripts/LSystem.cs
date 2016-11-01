@@ -18,6 +18,7 @@ public class LSystem : MonoBehaviour
     public int startingAge;
 	public int startLength;
 	public float maxAngle;
+    public float thinness;
     public bool sequenced;
 
     private List<Node> nodes;
@@ -102,7 +103,7 @@ public class LSystem : MonoBehaviour
                 if (currentNode.getChildren().Count > 0)
                 {
                     // TODO make it work for children count > 2
-                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
+                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < currentNode.maxAngle * thinness)
                     {
                         currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                     }

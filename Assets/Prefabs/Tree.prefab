@@ -70,10 +70,11 @@ MonoBehaviour:
   angleDecreaseFactor: 1
   lengthDecreaseFactor: 0.99
   scaleDecreaseFactor: 0.99
-  growthInterval: 0.26
+  growthInterval: 0.016
   startingAge: 4
   startLength: 10
   maxAngle: 60
+  thinness: 0.1
   sequenced: 0
 --- !u!1001 &100100000
 Prefab:
