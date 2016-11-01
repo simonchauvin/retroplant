@@ -36,7 +36,7 @@ public class LSystem : MonoBehaviour
         deepest = 0;
 
         nodes = new List<Node>();
-        nodes.Add(new Node(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle * angleDecreaseFactor, startLength * lengthDecreaseFactor, null, 0));
+        nodes.Add(new Node(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle, startLength, null, 0));
     }
 	
 	void Update ()
@@ -48,23 +48,7 @@ public class LSystem : MonoBehaviour
             if (currentNode != null && currentNode.depth + 1 <= startingAge)
             {
                 int depth = currentNode.depth + 1;
-                float unitHeight = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y;
-                float maxAngle = currentNode.maxAngle * angleDecreaseFactor;
-                float length = currentNode.length * lengthDecreaseFactor;
-                float lastAngle = currentAngle;
-
-                // TODO does not work and should be done in a while to have good angles
-                currentAngle = Random.Range(maxAngle, -maxAngle) - originAngle;
-                if (currentNode.getChildren().Count > 0)
-                {
-                    // TODO make it work for children count > 2
-                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
-                    {
-                        currentAngle = Random.Range(maxAngle, -maxAngle) - originAngle;
-                    }
-                }
-
-                Node newNode = new Node(currentNode.lastPosition, unitHeight, lastAngle, maxAngle, length, currentNode, depth);
+                Node newNode = new Node(currentNode.lastPosition, getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, currentNode.maxAngle * angleDecreaseFactor, currentNode.length * lengthDecreaseFactor, currentNode, depth);
                 if (depth > deepest)
                 {
                     deepest = depth;
@@ -113,6 +97,16 @@ public class LSystem : MonoBehaviour
                 {
                     currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
                 }*/
+
+                currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
+                if (currentNode.getChildren().Count > 0)
+                {
+                    // TODO make it work for children count > 2
+                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
+                    {
+                        currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
+                    }
+                }
 
                 // Drawing
                 ready = false;
