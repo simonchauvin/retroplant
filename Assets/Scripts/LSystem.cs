@@ -9,7 +9,6 @@ public class LSystem : MonoBehaviour
     public Transform[] unitPrefabsAge2;
     public Transform[] unitPrefabsAge3;
     public Transform[] unitPrefabsAge4;
-    public float startSize;
     public int minLength;
     public int maxNumberOfChildren;
     public float angleDecreaseFactor;
@@ -22,11 +21,8 @@ public class LSystem : MonoBehaviour
     public bool sequenced;
 
     private List<Node> nodes;
-    private Vector2 currentPosition;
     private Node currentNode;
-    private Transform currentUnitPrefab;
     private float currentAngle;
-    private Vector2 lastPosition;
     private bool ready;
     private int deepest;
     public float originAngle { get; set; }
@@ -34,14 +30,14 @@ public class LSystem : MonoBehaviour
 
 	void Start ()
     {
-        nodes = new List<Node>();
-        currentPosition = transform.position;
         // TODO FIX originAngle = Vector3.Angle(Vector3.up, Vector3.zero - transform.position);
         currentAngle = 0f - originAngle;
-        lastPosition = currentPosition;
         ready = true;
         deepest = 0;
-	}
+
+        nodes = new List<Node>();
+        nodes.Add(new Node(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle * angleDecreaseFactor, startLength * lengthDecreaseFactor, null, 0));
+    }
 	
 	void Update ()
     {
@@ -49,21 +45,18 @@ public class LSystem : MonoBehaviour
         if (ready)
         {
             // Adding new node
-            Node newNode = null;
-            if (currentNode == null)
+            if (currentNode != null && currentNode.depth + 1 <= startingAge)
             {
-                newNode = new Node(currentPosition, currentAngle, maxAngle * angleDecreaseFactor, startSize * scaleDecreaseFactor, startLength * lengthDecreaseFactor, null, 0);
-            }
-            else
-            {
-                newNode = new Node(currentPosition, currentAngle, currentNode.maxAngle * angleDecreaseFactor, currentNode.scale * scaleDecreaseFactor, currentNode.length * lengthDecreaseFactor, currentNode, currentNode.depth + 1);
+                float unitHeight = getUnitsFromDepth(currentNode.depth + 1)[0].GetComponent<SpriteRenderer>().bounds.size.y;
+                Vector2 newPosition = currentNode.lastPosition + new Vector2((unitHeight / 2f + currentNode.unitHeight / 2f) * Mathf.Sin(currentAngle * (Mathf.PI / 180f)), (unitHeight / 2f + currentNode.unitHeight / 2f) * Mathf.Cos(currentAngle * (Mathf.PI / 180f)));
+                Node newNode = new Node(newPosition, unitHeight, currentAngle, currentNode.maxAngle * angleDecreaseFactor, currentNode.length * lengthDecreaseFactor, currentNode, currentNode.depth + 1);
                 if (currentNode.depth + 1 > deepest)
                 {
                     deepest = currentNode.depth + 1;
                 }
                 currentNode.addChildren(newNode);
+                nodes.Add(newNode);
             }
-            nodes.Add(newNode);
 
             int index = -1;
             List<int> indices = new List<int>();
@@ -106,21 +99,6 @@ public class LSystem : MonoBehaviour
                     currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
                 }*/
 
-                Transform[] units = getUnitsFromDepth(currentNode.depth);
-                currentUnitPrefab = units[Random.Range(0, units.Length)];
-                currentPosition = currentNode.position;
-                currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
-                if (currentNode.getChildren().Count > 0)
-                {
-                    // TODO make it work for children count > 2
-                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
-                    {
-                        currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
-                    }
-                }
-                float unitHeight = currentUnitPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
-                lastPosition = currentPosition;
-
                 // Drawing
                 ready = false;
                 StartCoroutine("grow");
@@ -130,39 +108,52 @@ public class LSystem : MonoBehaviour
 
     IEnumerator grow ()
     {
+        Transform[] units = getUnitsFromDepth(currentNode.depth);
+        Transform currentUnitPrefab = units[Random.Range(0, units.Length)];
+        Vector2 currentPosition = currentNode.position;
+        Vector2 lastPosition = currentPosition;
+        currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
+        if (currentNode.getChildren().Count > 0)
+        {
+            // TODO make it work for children count > 2
+            while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
+            {
+                currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
+            }
+        }
+
         int length = Mathf.CeilToInt(currentNode.length);
-        float unitHeight = currentUnitPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
         for (int i = 0; i < length; i++)
         {
             if ((i == 0 && currentNode.getChildren().Count <= 0) || i > 0)
             {
                 Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
-                unit.localRotation = Quaternion.Euler(new Vector3(0f, 0f, -currentAngle));
-                unit.localScale = new Vector3(currentNode.scale, currentNode.scale, currentNode.scale);
                 unit.parent = transform;
 
-                // TODO should be done only once before starting growing the branch
-                RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, unitHeight, LayerMask.GetMask("Drawing"));
+                // TODO should be done only once before starting growing the branch (code before the loop)
+                RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
                 if (hitInfo)
                 {
                     //Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
                     //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
                     currentAngle -= Vector3.Angle(currentPosition - lastPosition, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
-                    unit.localRotation = Quaternion.Euler(new Vector3(0f, 0f, -currentAngle));
                 }
             }
 
-            lastPosition = currentPosition;
-            currentPosition.x += unitHeight * currentNode.scale * Mathf.Sin(currentAngle * (Mathf.PI / 180f));
-            currentPosition.y += unitHeight * currentNode.scale * Mathf.Cos(currentAngle * (Mathf.PI / 180f));
+            if (i + 1 < length)
+            {
+                lastPosition = currentPosition;
+                currentPosition.x += currentNode.unitHeight * Mathf.Sin(currentAngle * (Mathf.PI / 180f));
+                currentPosition.y += currentNode.unitHeight * Mathf.Cos(currentAngle * (Mathf.PI / 180f));
 
-            Transform[] units = getUnitsFromDepth(currentNode.depth);
-            currentUnitPrefab = units[Random.Range(0, units.Length)];
-            unitHeight = currentUnitPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
+                units = getUnitsFromDepth(currentNode.depth);
+                currentUnitPrefab = units[Random.Range(0, units.Length)];
+            }
 
             yield return new WaitForSeconds(growthInterval);
         }
 
+        currentNode.lastPosition = currentPosition;
         ready = true;
     }
 
