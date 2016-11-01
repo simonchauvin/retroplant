@@ -47,12 +47,27 @@ public class LSystem : MonoBehaviour
             // Adding new node
             if (currentNode != null && currentNode.depth + 1 <= startingAge)
             {
-                float unitHeight = getUnitsFromDepth(currentNode.depth + 1)[0].GetComponent<SpriteRenderer>().bounds.size.y;
-                Vector2 newPosition = currentNode.lastPosition + new Vector2((unitHeight / 2f + currentNode.unitHeight / 2f) * Mathf.Sin(currentAngle * (Mathf.PI / 180f)), (unitHeight / 2f + currentNode.unitHeight / 2f) * Mathf.Cos(currentAngle * (Mathf.PI / 180f)));
-                Node newNode = new Node(newPosition, unitHeight, currentAngle, currentNode.maxAngle * angleDecreaseFactor, currentNode.length * lengthDecreaseFactor, currentNode, currentNode.depth + 1);
-                if (currentNode.depth + 1 > deepest)
+                int depth = currentNode.depth + 1;
+                float unitHeight = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y;
+                float maxAngle = currentNode.maxAngle * angleDecreaseFactor;
+                float length = currentNode.length * lengthDecreaseFactor;
+                float lastAngle = currentAngle;
+
+                // TODO does not work and should be done in a while to have good angles
+                currentAngle = Random.Range(maxAngle, -maxAngle) - originAngle;
+                if (currentNode.getChildren().Count > 0)
                 {
-                    deepest = currentNode.depth + 1;
+                    // TODO make it work for children count > 2
+                    while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
+                    {
+                        currentAngle = Random.Range(maxAngle, -maxAngle) - originAngle;
+                    }
+                }
+
+                Node newNode = new Node(currentNode.lastPosition, unitHeight, lastAngle, maxAngle, length, currentNode, depth);
+                if (depth > deepest)
+                {
+                    deepest = depth;
                 }
                 currentNode.addChildren(newNode);
                 nodes.Add(newNode);
@@ -108,50 +123,35 @@ public class LSystem : MonoBehaviour
 
     IEnumerator grow ()
     {
-        Transform[] units = getUnitsFromDepth(currentNode.depth);
-        Transform currentUnitPrefab = units[Random.Range(0, units.Length)];
-        Vector2 currentPosition = currentNode.position;
-        Vector2 lastPosition = currentPosition;
-        currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
-        if (currentNode.getChildren().Count > 0)
-        {
-            // TODO make it work for children count > 2
-            while (Mathf.Abs(currentNode.getChildren()[0].prevAngle - currentAngle) < (currentNode.maxAngle * 2f) * 0.3f)
-            {
-                currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
-            }
-        }
-
         int length = Mathf.CeilToInt(currentNode.length);
-        for (int i = 0; i < length; i++)
+        int i = 0;
+        Vector2 currentPosition = currentNode.position;
+        Vector2 lastPosition;
+        Transform[] units;
+        Transform currentUnitPrefab;
+        do
         {
-            if ((i == 0 && currentNode.getChildren().Count <= 0) || i > 0)
+            lastPosition = currentPosition;
+            currentPosition += new Vector2(currentNode.unitHeight * Mathf.Sin(currentAngle * (Mathf.PI / 180f)), currentNode.unitHeight * Mathf.Cos(currentAngle * (Mathf.PI / 180f)));
+            units = getUnitsFromDepth(currentNode.depth);
+            currentUnitPrefab = units[Random.Range(0, units.Length)];
+
+            Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
+            unit.parent = transform;
+
+            // TODO should be done only once before starting growing the branch (code before the loop)
+            RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
+            if (hitInfo)
             {
-                Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
-                unit.parent = transform;
-
-                // TODO should be done only once before starting growing the branch (code before the loop)
-                RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
-                if (hitInfo)
-                {
-                    //Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
-                    //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
-                    currentAngle -= Vector3.Angle(currentPosition - lastPosition, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
-                }
-            }
-
-            if (i + 1 < length)
-            {
-                lastPosition = currentPosition;
-                currentPosition.x += currentNode.unitHeight * Mathf.Sin(currentAngle * (Mathf.PI / 180f));
-                currentPosition.y += currentNode.unitHeight * Mathf.Cos(currentAngle * (Mathf.PI / 180f));
-
-                units = getUnitsFromDepth(currentNode.depth);
-                currentUnitPrefab = units[Random.Range(0, units.Length)];
+                //Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
+                //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
+                currentAngle -= Vector3.Angle(currentPosition - lastPosition, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
             }
 
             yield return new WaitForSeconds(growthInterval);
+            i++;
         }
+        while (i < length);
 
         currentNode.lastPosition = currentPosition;
         ready = true;
