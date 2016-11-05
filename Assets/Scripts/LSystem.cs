@@ -9,6 +9,7 @@ public class LSystem : MonoBehaviour
     public Transform[] unitPrefabsAge2;
     public Transform[] unitPrefabsAge3;
     public Transform[] unitPrefabsAge4;
+    public Transform nodePrefab;
     public int minLength;
     public int maxNumberOfChildren;
     public float angleDecreaseFactor;
@@ -41,11 +42,17 @@ public class LSystem : MonoBehaviour
         currentNode = nodes[0];
     }
 	
-	void Update ()
+	void FixedUpdate ()
     {
         // TODO When too many branches cross make all their nodes fall and die
         if (ready)
         {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                List<Unit> units = nodes[Random.Range(0, nodes.Count)].getUnits();
+                cutOffBranch(units[Random.Range(0, units.Count)]);
+            }
+
             // Node selection
             int index = -1;
             List<int> indices = new List<int>();
@@ -64,13 +71,13 @@ public class LSystem : MonoBehaviour
             }
 
             // Adding new node
-            if (index >= 0 && nodes[index].depth + 1 <= startingAge && nodes[index].getChildren().Count < maxNumberOfChildren && nodes[index].length > minLength)
+            if (index >= 0 && nodes[index].depth + 1 <= startingAge)
             {
                 currentNode = nodes[index];
 
                 int depth = currentNode.depth + 1;
                 float length = currentNode.length * lengthDecreaseFactor;
-                float unitHeight = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y;
+                Vector2 unitSize = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size;
                 currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                 if (currentNode.getChildren().Count > 0)
                 {
@@ -80,17 +87,43 @@ public class LSystem : MonoBehaviour
                         currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                     }
                 }
-                Node newNode = new Node(currentNode.position + new Vector2(length * unitHeight * Mathf.Sin(currentAngle * Mathf.Deg2Rad), length * unitHeight * Mathf.Cos(currentAngle * Mathf.Deg2Rad)), unitHeight, currentAngle, currentNode.maxAngle * angleDecreaseFactor, length, currentNode, depth);
+                Vector2 newNodePosition = currentNode.position + new Vector2(length * unitSize.y * Mathf.Sin(currentAngle * Mathf.Deg2Rad), length * unitSize.y * Mathf.Cos(currentAngle * Mathf.Deg2Rad));
+                RaycastHit2D hitInfo = Physics2D.BoxCast(currentNode.position, unitSize, -currentAngle, newNodePosition - currentNode.position, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
+                if (hitInfo)
+                {
+                    //Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
+                    //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
+                    currentAngle -= Vector3.Angle(newNodePosition - currentNode.position, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
+                }
+                Node newNode = new Node(newNodePosition, unitSize.y, currentAngle, currentNode.maxAngle * angleDecreaseFactor, length, currentNode, depth);
                 if (depth > deepest)
                 {
                     deepest = depth;
                 }
-                currentNode.addChildren(newNode);
+                currentNode.addChild(newNode);
                 nodes.Add(newNode);
 
                 currentNode = newNode;
                 ready = false;
                 StartCoroutine("grow");
+            }
+        }
+    }
+
+    public void cutOffBranch (Unit unit)
+    {
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].getUnit(unit.id) != null)
+            {
+                List<Node> nodesToRemove = nodes[i].cut();
+                for (int j = 0; j < nodesToRemove.Count; j++)
+                {
+                    nodes.Remove(nodesToRemove[j]);
+                }
+                nodesToRemove.Clear();
+                nodesToRemove = null;
+                nodes.Remove(nodes[i]);
             }
         }
     }
@@ -107,6 +140,7 @@ public class LSystem : MonoBehaviour
         Vector2 lastPosition;
         Transform[] units;
         Transform currentUnitPrefab;
+        Transform node = Instantiate(nodePrefab, currentPosition, Quaternion.identity) as Transform;
         do
         {
             lastPosition = currentPosition;
@@ -115,16 +149,8 @@ public class LSystem : MonoBehaviour
             currentUnitPrefab = units[Random.Range(0, units.Length)];
 
             Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
-            unit.parent = transform;
-
-            // TODO should be done only once before starting growing the branch
-            RaycastHit2D hitInfo = Physics2D.BoxCast(currentPosition, unit.GetComponent<SpriteRenderer>().bounds.size, -currentAngle, currentPosition - lastPosition, currentNode.unitHeight, LayerMask.GetMask("Drawing"));
-            if (hitInfo)
-            {
-                //Debug.DrawRay(hitInfo.point, hitInfo.normal, Color.red, Mathf.Infinity);
-                //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
-                currentAngle -= Vector3.Angle(currentPosition - lastPosition, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
-            }
+            unit.parent = node;
+            currentNode.addUnit(unit.GetComponent<Unit>());
 
             yield return new WaitForSeconds(growthInterval);
             i++;

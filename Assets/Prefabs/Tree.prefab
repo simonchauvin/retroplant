@@ -65,6 +65,7 @@ MonoBehaviour:
   - {fileID: 442926, guid: aa37d7f901168ee47a600b6291906d13, type: 2}
   - {fileID: 442926, guid: 58ecf19ce323e094e82d252667944f4f, type: 2}
   - {fileID: 442926, guid: c168b13a012b3ae49ab201f8f42f836b, type: 2}
+  nodePrefab: {fileID: 4000011412980312, guid: fad0100dad6aac546b6e3a63f76b2484, type: 2}
   minLength: 1
   maxNumberOfChildren: 2
   angleDecreaseFactor: 1
