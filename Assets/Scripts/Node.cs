@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class Node
 {
     public Vector2 position { get; set; }
-    public Vector2 lastPosition { get; set; }
     public float unitHeight { get; set; }
     public float prevAngle { get; set; }
     public float maxAngle { get; set; }

@@ -38,6 +38,7 @@ public class LSystem : MonoBehaviour
 
         nodes = new List<Node>();
         nodes.Add(new Node(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle, startLength, null, 0));
+        currentNode = nodes[0];
     }
 	
 	void Update ()
@@ -45,19 +46,7 @@ public class LSystem : MonoBehaviour
         // TODO When too many branches cross make all their nodes fall and die
         if (ready)
         {
-            // Adding new node
-            if (currentNode != null && currentNode.depth + 1 <= startingAge)
-            {
-                int depth = currentNode.depth + 1;
-                Node newNode = new Node(currentNode.lastPosition, getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, currentNode.maxAngle * angleDecreaseFactor, currentNode.length * lengthDecreaseFactor, currentNode, depth);
-                if (depth > deepest)
-                {
-                    deepest = depth;
-                }
-                currentNode.addChildren(newNode);
-                nodes.Add(newNode);
-            }
-
+            // Node selection
             int index = -1;
             List<int> indices = new List<int>();
             float value = Random.value;
@@ -74,31 +63,14 @@ public class LSystem : MonoBehaviour
                 }
             }
 
-            // Start growing the new branch
-            if (index >= 0 && nodes[index].getChildren().Count < maxNumberOfChildren && nodes[index].length > minLength)
+            // Adding new node
+            if (index >= 0 && nodes[index].depth + 1 <= startingAge && nodes[index].getChildren().Count < maxNumberOfChildren && nodes[index].length > minLength)
             {
                 currentNode = nodes[index];
 
-                // Moving
-                // TODO generalize
-                /*if (sequenced && currentUnitPrefab)
-                {
-                    if (currentUnitPrefab.GetComponent<Unit>().type == 0)
-                    {
-                        currentUnitPrefab = unitPrefabs[1];
-                        currentUnitPrefab.GetComponent<Unit>().type = 1;
-                    }
-                    else
-                    {
-                        currentUnitPrefab = unitPrefabs[0];
-                        currentUnitPrefab.GetComponent<Unit>().type = 0;
-                    }
-                }
-                else
-                {
-                    currentUnitPrefab = unitPrefabs[Random.Range(0, unitPrefabs.Length)];
-                }*/
-
+                int depth = currentNode.depth + 1;
+                float length = currentNode.length * lengthDecreaseFactor;
+                float unitHeight = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size.y;
                 currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                 if (currentNode.getChildren().Count > 0)
                 {
@@ -108,8 +80,15 @@ public class LSystem : MonoBehaviour
                         currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                     }
                 }
+                Node newNode = new Node(currentNode.position + new Vector2(length * unitHeight * Mathf.Sin(currentAngle * Mathf.Deg2Rad), length * unitHeight * Mathf.Cos(currentAngle * Mathf.Deg2Rad)), unitHeight, currentAngle, currentNode.maxAngle * angleDecreaseFactor, length, currentNode, depth);
+                if (depth > deepest)
+                {
+                    deepest = depth;
+                }
+                currentNode.addChildren(newNode);
+                nodes.Add(newNode);
 
-                // Drawing
+                currentNode = newNode;
                 ready = false;
                 StartCoroutine("grow");
             }
@@ -121,13 +100,17 @@ public class LSystem : MonoBehaviour
         int length = Mathf.CeilToInt(currentNode.length);
         int i = 0;
         Vector2 currentPosition = currentNode.position;
+        if (currentNode.parent != null)
+        {
+            currentPosition = currentNode.parent.position;
+        }
         Vector2 lastPosition;
         Transform[] units;
         Transform currentUnitPrefab;
         do
         {
             lastPosition = currentPosition;
-            currentPosition += new Vector2(currentNode.unitHeight * Mathf.Sin(currentAngle * (Mathf.PI / 180f)), currentNode.unitHeight * Mathf.Cos(currentAngle * (Mathf.PI / 180f)));
+            currentPosition += new Vector2(currentNode.unitHeight * Mathf.Sin(currentAngle * Mathf.Deg2Rad), currentNode.unitHeight * Mathf.Cos(currentAngle * Mathf.Deg2Rad));
             units = getUnitsFromDepth(currentNode.depth);
             currentUnitPrefab = units[Random.Range(0, units.Length)];
 
@@ -148,7 +131,6 @@ public class LSystem : MonoBehaviour
         }
         while (i < length);
 
-        currentNode.lastPosition = currentPosition;
         ready = true;
     }
 
