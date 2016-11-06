@@ -9,7 +9,7 @@ public class LSystem : MonoBehaviour
     public Transform[] unitPrefabsAge2;
     public Transform[] unitPrefabsAge3;
     public Transform[] unitPrefabsAge4;
-    public Transform nodePrefab;
+    public Node nodePrefab;
     public int minLength;
     public int maxNumberOfChildren;
     public float angleDecreaseFactor;
@@ -37,8 +37,14 @@ public class LSystem : MonoBehaviour
         ready = true;
         deepest = 0;
 
+        Node newNode = Instantiate(nodePrefab, transform.position, Quaternion.identity) as Node;
+        newNode.init(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle, startLength, null, 0);
+        newNode.transform.parent = transform;
+        Transform unit = Instantiate(getUnitsFromDepth(0)[0], transform.position, Quaternion.identity) as Transform;
+        unit.parent = newNode.transform;
+        newNode.addUnit(unit.GetComponent<Unit>());
         nodes = new List<Node>();
-        nodes.Add(new Node(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle, startLength, null, 0));
+        nodes.Add(newNode);
         currentNode = nodes[0];
     }
 	
@@ -47,10 +53,14 @@ public class LSystem : MonoBehaviour
         // TODO When too many branches cross make all their nodes fall and die
         if (ready)
         {
-            if (Input.GetKeyDown(KeyCode.G))
+            if (Input.GetMouseButton(0))
             {
-                List<Unit> units = nodes[Random.Range(0, nodes.Count)].getUnits();
-                cutOffBranch(units[Random.Range(0, units.Count)]);
+                Vector3 pos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
+                RaycastHit2D hit = Physics2D.Raycast(pos, Vector3.forward, Mathf.Infinity, LayerMask.GetMask("Plant"));
+                if (hit)
+                {
+                    cutOffBranch(hit.collider.GetComponent<Unit>());
+                }
             }
 
             // Node selection
@@ -95,7 +105,9 @@ public class LSystem : MonoBehaviour
                     //Debug.DrawLine(currentPosition, currentPosition + (hitInfo.normal), Color.blue, Mathf.Infinity);
                     currentAngle -= Vector3.Angle(newNodePosition - currentNode.position, hitInfo.normal) - 90f - originAngle;// + Vector3.Angle(Vector3.up, hitInfo.normal);
                 }
-                Node newNode = new Node(newNodePosition, unitSize.y, currentAngle, currentNode.maxAngle * angleDecreaseFactor, length, currentNode, depth);
+                Node newNode = Instantiate(nodePrefab, newNodePosition, Quaternion.identity) as Node;
+                newNode.init(newNodePosition, unitSize.y, currentAngle, currentNode.maxAngle * angleDecreaseFactor, length, currentNode, depth);
+                newNode.transform.parent = transform;
                 if (depth > deepest)
                 {
                     deepest = depth;
@@ -116,13 +128,16 @@ public class LSystem : MonoBehaviour
         {
             if (nodes[i].getUnit(unit.id) != null)
             {
-                List<Node> nodesToRemove = nodes[i].cut();
-                for (int j = 0; j < nodesToRemove.Count; j++)
+                List<Node> descendants = nodes[i].getDescendants();
+                for (int j = 0; j < descendants.Count; j++)
                 {
-                    nodes.Remove(nodesToRemove[j]);
+                    nodes.Remove(descendants[j]);
+                    descendants[j].cut();
+                    GameObject.Destroy(descendants[j].gameObject);
                 }
-                nodesToRemove.Clear();
-                nodesToRemove = null;
+                descendants.Clear();
+                nodes[i].parent.removeChild(nodes[i]);
+                GameObject.Destroy(nodes[i].gameObject);
                 nodes.Remove(nodes[i]);
             }
         }
@@ -140,7 +155,6 @@ public class LSystem : MonoBehaviour
         Vector2 lastPosition;
         Transform[] units;
         Transform currentUnitPrefab;
-        Transform node = Instantiate(nodePrefab, currentPosition, Quaternion.identity) as Transform;
         do
         {
             lastPosition = currentPosition;
@@ -149,7 +163,7 @@ public class LSystem : MonoBehaviour
             currentUnitPrefab = units[Random.Range(0, units.Length)];
 
             Transform unit = Instantiate(currentUnitPrefab, currentPosition, Quaternion.identity) as Transform;
-            unit.parent = node;
+            unit.parent = currentNode.transform;
             currentNode.addUnit(unit.GetComponent<Unit>());
 
             yield return new WaitForSeconds(growthInterval);

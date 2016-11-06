@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Node
+public class Node : MonoBehaviour
 {
+    public static int nextId;
+
+    public int id { get; private set; }
     public Vector2 position { get; set; }
     public float unitHeight { get; set; }
     public float prevAngle { get; set; }
@@ -15,7 +18,15 @@ public class Node
     public int depth { get; private set; }
 
 
-	public Node (Vector2 startPosition, float unitHeight, float prevAngle, float startMaxAngle, float startLength, Node parent, int depth)
+	void Awake ()
+    {
+        id = Node.nextId;
+        Node.nextId++;
+        children = new List<Node>();
+        units = new List<Unit>();
+    }
+
+    public void init(Vector2 startPosition, float unitHeight, float prevAngle, float startMaxAngle, float startLength, Node parent, int depth)
     {
         position = startPosition;
         this.unitHeight = unitHeight;
@@ -23,9 +34,7 @@ public class Node
         maxAngle = startMaxAngle;
         length = startLength;
         this.parent = parent;
-        children = new List<Node>();
         this.depth = depth;
-        units = new List<Unit>();
     }
 
     public void addChild (Node newNode)
@@ -43,29 +52,27 @@ public class Node
         children.Remove(oldNode);
     }
 
-    public List<Node> cut()
+    public void cut ()
     {
-        List<Node> nodesToRemove = new List<Node>();
-        for (int i = 0; i < children.Count; i++)
-        {
-            List<Node> nodes = children[i].cut();
-            for (int j = 0; j < nodes.Count; j++)
-            {
-                nodesToRemove.Add(nodes[j]);
-            }
-        }
-        children.Clear();
-        children = null;
         for (int i = 0; i < units.Count; i++)
         {
             GameObject.Destroy(units[i].gameObject);
         }
-        units.Clear();
-        units = null;
-        this.parent.removeChild(this);
-        this.parent = null;
+    }
 
-        return nodesToRemove;
+    public List<Node> getDescendants()
+    {
+        List<Node> descendants = new List<Node>();
+        for (int i = 0; i < children.Count; i++)
+        {
+            List<Node> returnedDescendants = children[i].getDescendants();
+            for (int j = 0; j < returnedDescendants.Count; j++)
+            {
+                descendants.Add(returnedDescendants[j]);
+            }
+            descendants.Add(children[i]);
+        }
+        return descendants;
     }
 
     public List<Node> getChildren ()
