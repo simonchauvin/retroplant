@@ -24,7 +24,6 @@ public class LSystem : MonoBehaviour
 
     private List<Node> nodes;
     private Node currentNode;
-    private float currentAngle;
     private bool ready;
     private int deepest;
     public float originAngle { get; set; }
@@ -32,13 +31,11 @@ public class LSystem : MonoBehaviour
 
 	void Start ()
     {
-        // TODO FIX originAngle = Vector3.Angle(Vector3.up, Vector3.zero - transform.position);
-        currentAngle = 0f - originAngle;
         ready = true;
         deepest = 0;
 
         Node newNode = Instantiate(nodePrefab, transform.position, Quaternion.identity) as Node;
-        newNode.init(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, currentAngle, maxAngle, startLength, null, 0);
+        newNode.init(transform.position, getUnitsFromDepth(0)[0].GetComponent<SpriteRenderer>().bounds.size.y, 0f - originAngle, maxAngle, startLength, null, 0);
         newNode.transform.parent = transform;
         Transform unit = Instantiate(getUnitsFromDepth(0)[0], transform.position, Quaternion.identity) as Transform;
         unit.parent = newNode.transform;
@@ -69,8 +66,8 @@ public class LSystem : MonoBehaviour
             float value = Random.value;
             // TODO make it work for more than 2 children
             float randChildren = Random.value;
-            // TODO randomize number of children (2-3 is very rare)
-            while ((index < 0 || (nodes[index].getChildren().Count > 0 && randChildren > 0.5f) || nodes[index].getChildren().Count >= maxNumberOfChildren || (nodes[index].getChildren().Count > 0 && value < nodes[index].depth / deepest) || nodes[index].length <= minLength) && indices.Count < nodes.Count)
+            // TODO randomize number of children (2-3 should be rare)
+            while ((index < 0 || (nodes[index].getChildren().Count > 0 && randChildren > 0.5f) || nodes[index].getChildren().Count >= maxNumberOfChildren || (nodes[index].getChildren().Count > 0 && deepest > 0 && value < nodes[index].depth / deepest) || nodes[index].length <= minLength) && indices.Count < nodes.Count)
             {
                 // TODO compute proba knowing the surrounding nodes children count
                 index = Random.Range(0, nodes.Count);
@@ -85,10 +82,10 @@ public class LSystem : MonoBehaviour
             {
                 currentNode = nodes[index];
 
-                int depth = currentNode.depth + 1;
+                int depth = Random.value > 0.7f ? currentNode.depth + 1 : currentNode.depth;
                 float length = currentNode.length * lengthDecreaseFactor;
                 Vector2 unitSize = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size;
-                currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
+                float currentAngle = Random.Range(currentNode.maxAngle, -currentNode.maxAngle) - originAngle;
                 if (currentNode.getChildren().Count > 0)
                 {
                     // TODO make it work for children count > 2
@@ -158,7 +155,7 @@ public class LSystem : MonoBehaviour
         do
         {
             lastPosition = currentPosition;
-            currentPosition += new Vector2(currentNode.unitHeight * Mathf.Sin(currentAngle * Mathf.Deg2Rad), currentNode.unitHeight * Mathf.Cos(currentAngle * Mathf.Deg2Rad));
+            currentPosition += new Vector2(currentNode.unitHeight * Mathf.Sin(currentNode.prevAngle * Mathf.Deg2Rad), currentNode.unitHeight * Mathf.Cos(currentNode.prevAngle * Mathf.Deg2Rad));
             units = getUnitsFromDepth(currentNode.depth);
             currentUnitPrefab = units[Random.Range(0, units.Length)];
 
