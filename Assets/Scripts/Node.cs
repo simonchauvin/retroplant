@@ -7,9 +7,8 @@ public class Node : MonoBehaviour
     public static int nextId;
 
     public int id { get; private set; }
-    public Vector2 position { get; set; }
     public float unitHeight { get; set; }
-    public float prevAngle { get; set; }
+    public float angle { get; set; }
     public float maxAngle { get; set; }
     public float length { get; set; }
     private List<Unit> units;
@@ -26,11 +25,10 @@ public class Node : MonoBehaviour
         units = new List<Unit>();
     }
 
-    public void init(Vector2 startPosition, float unitHeight, float prevAngle, float startMaxAngle, float startLength, Node parent, int depth)
+    public void init(float unitHeight, float prevAngle, float startMaxAngle, float startLength, Node parent, int depth)
     {
-        position = startPosition;
         this.unitHeight = unitHeight;
-        this.prevAngle = prevAngle;
+        this.angle = prevAngle;
         maxAngle = startMaxAngle;
         length = startLength;
         this.parent = parent;
@@ -73,6 +71,16 @@ public class Node : MonoBehaviour
             descendants.Add(children[i]);
         }
         return descendants;
+    }
+
+    public Vector2 getStartingPosition()
+    {
+        return transform.GetComponentsInChildren<Transform>()[0].position;
+    }
+
+    public Vector2 getLastPosition()
+    {
+        return transform.GetComponentsInChildren<Transform>()[transform.GetComponentsInChildren<Transform>().Length - 1].position;
     }
 
     public List<Node> getChildren ()
