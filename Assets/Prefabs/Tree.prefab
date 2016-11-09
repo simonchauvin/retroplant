@@ -78,7 +78,7 @@ MonoBehaviour:
   startingAge: 4
   startLength: 10
   maxAngle: 60
-  heightFactor: 0.7
+  heightFactor: 0.6
   wideness: 0.5
   sequenced: 0
 --- !u!1001 &100100000
