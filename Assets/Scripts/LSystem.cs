@@ -110,7 +110,9 @@ public class LSystem : MonoBehaviour
                         currentNode = root;
                     }
 
-                    int depth = Random.value > heightFactor ? currentNode.depth + 1 : currentNode.depth; // TODO add something to make it less possible at start and during the first branches
+                    // TODO add something to make it less possible at start and during the first branches
+                    int depth = Random.value > heightFactor ? currentNode.depth + 1 : currentNode.depth;
+
                     float length = currentNode.length * lengthDecreaseFactor;
                     Vector2 unitSize = getUnitsFromDepth(depth)[0].GetComponent<SpriteRenderer>().bounds.size;
                     float maxAngle = currentNode.maxAngle * angleDecreaseFactor;
